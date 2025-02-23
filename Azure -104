@@ -1,0 +1,76 @@
+# AZ-104 Portfolio (Microsoft Azure Administrator)
+
+## General Information
+**Name:** Yitzhak Segal  
+**Description:** A portfolio including summaries, commands, exercises, and practical examples for the **AZ-104** exam.
+
+---
+
+## Main Topics
+1. **Identity and Access Management (IAM)**
+   - Creating users and groups in Azure AD
+   - Configuring RBAC (Role-Based Access Control)
+   - Managing permissions and Conditional Access
+
+2. **Azure Resource Management**
+   - Working with Azure Resource Manager (ARM)
+   - Creating and managing resources using Azure CLI and PowerShell
+   - Using Tags and Policies
+
+3. **Compute Management**
+   - Creating and managing Virtual Machines (VMs)
+   - Configuring Scale Sets
+   - Managing availability (Availability Sets, Zones)
+
+4. **Storage Management**
+   - Creating Azure Storage Accounts
+   - Managing Blob Storage and Files
+   - Using Azure Storage Explorer
+
+5. **Networking Management**
+   - Creating and managing Virtual Networks (VNet)
+   - Configuring Azure Firewall and Network Security Groups (NSG)
+   - Connecting networks (VNet Peering, VPN, ExpressRoute)
+
+6. **Monitoring & Backup Management**
+   - Using Azure Monitor and Log Analytics
+   - Creating Alert Rules and managing Azure Security Center
+   - Backup and recovery with Azure Backup
+
+---
+
+## Important PowerShell and Azure CLI Commands
+```powershell
+# Login to Azure
+Connect-AzAccount
+
+# Create a new resource (example: VM)
+New-AzVM -ResourceGroupName 'MyResourceGroup' -Name 'MyVM' -Location 'East US' -Image 'UbuntuLTS'
+```
+```bash
+# Login to Azure CLI
+az login
+
+# Create a Storage Account
+az storage account create --name mystorageacct --resource-group MyResourceGroup --location eastus --sku Standard_LRS
+```
+
+---
+
+## Practice Exercises
+### Exercise 1: Creating a Virtual Network and Connecting VMs
+- Create a VNet with two Subnets.
+- Create two Virtual Machines, each in a different Subnet.
+- Test connectivity between them using **Ping**.
+
+### Exercise 2: Configuring Access Policies (RBAC)
+- Create a new user in Azure AD.
+- Grant them **Contributor** permissions for a specific resource.
+- Verify what actions they can perform.
+
+---
+
+## Additional Resources
+- [Official Microsoft Documentation](https://learn.microsoft.com/en-us/certifications/exams/az-104/)
+- [Free Course on Microsoft Learn](https://learn.microsoft.com/en-us/training/paths/az-104-administrator/)
+- [Exam Practice Tests](https://www.examtopics.com/exams/microsoft/az-104/)
