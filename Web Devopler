@@ -1,0 +1,76 @@
+import { useState, useEffect } from "react";
+import { auth, db } from "../firebase";
+import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { collection, addDoc, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { Button, Input, Card, CardContent } from "@/components/ui";
+
+export default function TaskManager() {
+  const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [task, setTask] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = onSnapshot(
+        collection(db, "tasks"),
+        (snapshot) => {
+          setTasks(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const signIn = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    setUser(result.user);
+  };
+
+  const logOut = async () => {
+    await signOut(auth);
+    setUser(null);
+  };
+
+  const addTask = async () => {
+    if (task.trim()) {
+      await addDoc(collection(db, "tasks"), { text: task, user: user.email });
+      setTask("");
+    }
+  };
+
+  const removeTask = async (id) => {
+    await deleteDoc(doc(db, "tasks", id));
+  };
+
+  return (
+    <div className="max-w-xl mx-auto p-6">
+      {!user ? (
+        <Button onClick={signIn}>Sign in with Google</Button>
+      ) : (
+        <div>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Welcome, {user.displayName}</h2>
+            <Button onClick={logOut}>Log Out</Button>
+          </div>
+          <div className="flex mt-4 gap-2">
+            <Input
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+              placeholder="Enter task"
+            />
+            <Button onClick={addTask}>Add Task</Button>
+          </div>
+          <div className="mt-4">
+            {tasks.map((t) => (
+              <Card key={t.id} className="mb-2 flex justify-between p-4">
+                <CardContent>{t.text}</CardContent>
+                <Button onClick={() => removeTask(t.id)}>Delete</Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
