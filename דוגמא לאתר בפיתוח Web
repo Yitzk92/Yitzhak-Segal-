@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אתר לדוגמה</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>ברוך הבא לאתר שלי</h1>
+    </header>
+    <main>
+        <p>זהו אתר פשוט למתחילים בלימוד פיתוח אתרים.</p>
+        <button onclick="changeText()">לחץ עליי</button>
+        <p id="text">כאן יהיה שינוי.</p>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
+/* קובץ styles.css */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+button {
+    background-color: #008cba;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #005f73;
+}
+
+/* קובץ script.js */
+function changeText() {
+    document.getElementById("text").innerText = "הטקסט השתנה!";
+}
