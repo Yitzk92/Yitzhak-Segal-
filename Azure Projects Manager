@@ -1,0 +1,72 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/*
+
+tasks:
+  - task: UseDotNet@2
+    displayName: 'Install .NET'
+    inputs:
+      packageType: 'sdk'
+      version: '6.x'
+  
+  - task: NodeTool@0
+    displayName: 'Install Node.js'
+    inputs:
+      versionSpec: '16.x'
+
+  - task: Npm@1
+    displayName: 'Install Dependencies'
+    inputs:
+      command: 'install'
+      workingDir: 'src/frontend'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build Backend'
+    inputs:
+      command: 'build'
+      projects: 'src/backend/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run Tests'
+    inputs:
+      command: 'test'
+      projects: 'src/backend/*.csproj'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Backend Artifacts'
+    inputs:
+      artifactName: 'backend'
+      pathToPublish: 'src/backend/bin/Release/'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy to Azure Web App'
+    inputs:
+      azureSubscription: 'AzureServiceConnection'
+      appName: 'FinanceManagementApp'
+      package: '$(Build.ArtifactStagingDirectory)/*.zip'
+      runtimeStack: 'DOTNETCORE|6.0'
+
+environments:
+  dev:
+    deployment:
+      strategy:
+        rolling:
+  prod:
+    deployment:
+      strategy:
+        rolling:
+
+  - task: AzureSQLDacpacDeployment@1
+    displayName: 'Deploy Database to Azure SQL'
+    inputs:
+      azureSubscription: 'AzureServiceConnection'
+      serverName: 'financedbserver.database.windows.net'
+      databaseName: 'FinanceDB'
+      authenticationType: 'server'
+      username: 'adminUser'
+      password: '$(sqlPassword)'
+      dacpacFile: '$(Build.ArtifactStagingDirectory)/FinanceDB.dacpac'
