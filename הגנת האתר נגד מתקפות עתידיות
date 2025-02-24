@@ -1,0 +1,2 @@
+chmod 644 *.php
+chmod 755 -R wp-content/uploads
