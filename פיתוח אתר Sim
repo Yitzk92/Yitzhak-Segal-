@@ -1,0 +1,77 @@
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectItem } from "@/components/ui/select";
+import dynamic from 'next/dynamic';
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+
+export default function SimGuideApp() {
+  const [country, setCountry] = useState("");
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [fontSize, setFontSize] = useState(16);
+
+  useEffect(() => {
+    if (country) {
+      setLoading(true);
+      fetch(`/api/sim-data?country=${country}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setData(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [country]);
+
+  return (
+    <div 
+      className={`p-6 max-w-2xl mx-auto ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`} 
+      style={{ fontSize: `${fontSize}px` }}
+    >
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">מדריך להפעלת סים בחו"ל</h1>
+        <div className="flex items-center">
+          <span className="mr-2">מצב כהה</span>
+          <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+        </div>
+      </div>
+      <div className="flex items-center mb-4">
+        <span className="mr-2">גודל טקסט</span>
+        <Slider min={12} max={24} step={1} value={[fontSize]} onValueChange={(val) => setFontSize(val[0])} />
+      </div>
+      <Input 
+        placeholder="חפש מדינה או ספק..." 
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+        className="mb-4"
+      />
+      <Select onValueChange={setCountry}>
+        <SelectItem value="usa">ארה"ב</SelectItem>
+        <SelectItem value="uk">בריטניה</SelectItem>
+        <SelectItem value="france">צרפת</SelectItem>
+        <SelectItem value="japan">יפן</SelectItem>
+      </Select>
+      {loading && <p>טוען מידע...</p>}
+      {data && (
+        <Card className="mt-4">
+          <CardContent>
+            <h2 className="text-xl font-semibold">{data.country}</h2>
+            <p>ספקים מומלצים: {data.providers.join(", ")}</p>
+            <p>עלות משוערת: {data.estimatedCost} ש"ח</p>
+            <p>{data.tips}</p>
+            <p className="mt-2 font-semibold">אופי המקום:</p>
+            <p>{data.countryInfo}</p>
+            <Map location={data.mapLocation} />
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
